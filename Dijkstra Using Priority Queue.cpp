@@ -6,6 +6,7 @@
 using namespace std;
 
 #define INF		1048576
+#define MAX		16384
 
 struct edge{
 	int src;
@@ -20,16 +21,16 @@ int m;
 int i;
 
 // Whether the ith node has been analyzed.
-bool ana[16384];
+bool ana[MAX];
 
 // The shortest path from start node to the ith node.
-int l[16384];
+int l[MAX];
 
 // Adjacency list.
 vector<vector<edge> > al;
 
 // Number of ways that the ith node can choose.
-int s[16384];
+int s[MAX];
 
 int Dijkstra(){
 	l[0] = 0;
@@ -44,7 +45,7 @@ int Dijkstra(){
 		dijk.push(make_pair(e.cost * (-1), e.dest));
 		l[e.dest] = e.cost;
 	}
-	l[0] = 0; 
+	l[0] = 0;
 	ana[0] = true;
 
 	for (i = 1; i < n; ++i){
@@ -84,6 +85,7 @@ int main(){
 		al[e.src].push_back(e);
 		++s[e.src];
 	}
+	getchar();
 
 	printf("%d", Dijkstra());
 
