@@ -44,6 +44,7 @@ int Dijkstra(){
 		dijk.push(make_pair(e.cost * (-1), e.dest));
 		l[e.dest] = e.cost;
 	}
+	l[0] = 0; 
 	ana[0] = true;
 
 	for (i = 1; i < n; ++i){
