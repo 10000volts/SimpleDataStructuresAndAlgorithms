@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <iostream>
 #include <string.h> 
 #include <vector>
@@ -5,13 +6,14 @@
 
 using namespace std;
 
-#define INF		1048576
-#define MAX		16384
+#define MAX		131072
+#define MAXP	262144
+static const long long INF = 17179869184;
 
 struct edge{
 	int src;
 	int dest;
-	int cost;
+	long long cost;
 };
 
 // Number of nodes.
@@ -24,70 +26,71 @@ int i;
 bool ana[MAX];
 
 // The shortest path from start node to the ith node.
-int l[MAX];
+long long l[MAX];
 
 // Adjacency list.
 vector<vector<edge> > al;
 
 // Number of ways that the ith node can choose.
-int s[MAX];
+int s[MAXP];
 
-int Dijkstra(){
-	l[0] = 0;
-	for (i = 1; i < n; ++i){
+
+void Dijkstra(int st){
+	for (i = 1; i <= n; ++i){
 		l[i] = INF;
 	}
 
 	// dijk.first : Temporary shortest path from start node to the ith node. dijk.second : the index of the node, means i.
-	priority_queue<pair<int, int> > dijk;
-	for (i = 0; i < s[0]; ++i){
-		edge e = al[0][i];
+	priority_queue<pair<long long, int> > dijk;
+	for (i = 0; i < s[1]; ++i){
+		edge e = al[st][i];
 		dijk.push(make_pair(e.cost * (-1), e.dest));
 		l[e.dest] = e.cost;
 	}
-	l[0] = 0;
-	ana[0] = true;
+	l[st] = 0;
+	ana[st] = true;
 
-	for (i = 1; i < n; ++i){
+	while (!dijk.empty()){
 		int anai = dijk.top().second;
-		while (ana[anai]){
-			dijk.pop();
-			anai = dijk.top().second;
-		}
+		dijk.pop();
+		if (ana[anai]) continue;
 
 		int j;
 		for (j = 0; j < s[anai]; ++j){
-			edge te = al[anai][j];
-			if (l[anai] + te.cost < l[te.dest]){
-				l[te.dest] = l[anai] + te.cost;
-				dijk.push(make_pair(l[te.dest] * (-1), te.dest));
+			int dest = al[anai][j].dest;
+			if (l[anai] + al[anai][j].cost < l[dest]){
+				l[dest] = l[anai] + al[anai][j].cost;
+				dijk.push(make_pair(l[dest] * (-1), dest));
 			}
 		}
 		ana[anai] = true;
-
-		dijk.pop();
 	}
-	return l[n - 1];
+
+	for (i = 1; i <= n; ++i){
+		printf("%lld", l[i]);
+		if (i < n) putchar(' ');
+	}
 }
 
 int main(){
+	int st;
 	memset(ana, 0, sizeof(ana));
 	memset(s, 0, sizeof(s));
 
-	scanf("%d%d", &n, &m);
+	scanf("%d%d%d", &n, &m, &st);
 	getchar();
-	al.resize(n);
-	for (i = 0; i < m; ++i){
+	al.resize(n + 1);
+	for (i = 1; i <= m; ++i){
 		edge e;
 		scanf("%d", &e.src);
 		scanf("%d", &e.dest);
-		scanf("%d", &e.cost);
+		scanf("%lld", &e.cost);
 		al[e.src].push_back(e);
 		++s[e.src];
 	}
 	getchar();
 
-	printf("%d", Dijkstra());
+	Dijkstra(st);
 
 	return 0;
 }
