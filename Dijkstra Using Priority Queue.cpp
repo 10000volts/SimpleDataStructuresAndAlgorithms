@@ -42,8 +42,10 @@ void Dijkstra(int st){
 	priority_queue<pair<long long, int> > pq;
 	for (i = 0; i < s[st]; ++i){
 		edge e = al[st][i];
-		pq.push(make_pair(-e.cost, e.dest));
-		if(e.cost < dis[e.dest]) dis[e.dest] = e.cost;
+		if(e.cost < dis[e.dest]){
+			dis[e.dest] = e.cost;
+			pq.push(make_pair(-e.cost, e.dest));
+		}
 	}
 	dis[st] = 0;
 	ana[st] = true;
