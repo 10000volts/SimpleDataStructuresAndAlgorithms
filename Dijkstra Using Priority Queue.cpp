@@ -1,13 +1,13 @@
-#include <stdio.h>
+#include <cstdio>
 #include <string.h> 
 #include <vector>
 #include <queue>
 
 using namespace std;
 
-#define MAX		131072
-#define MAXP	262144
-static const long long INF = 17179869184;
+#define MAX	16384
+#define MAXP	524288
+static const long long INF = 2147483647;
 
 struct edge{
 	int src;
@@ -17,15 +17,15 @@ struct edge{
 
 // Number of nodes.
 int n;
-// Number of paths.
+// Number of edges.
 int m;
 int i;
 
 // Whether the ith node has been analyzed.
 bool ana[MAX];
 
-// The shortest path from start node to the ith node.
-long long l[MAX];
+// The shortest distance from start node to the ith node.
+long long dis[MAX];
 
 // Adjacency list.
 vector<vector<edge> > al;
@@ -33,48 +33,44 @@ vector<vector<edge> > al;
 // Number of ways that the ith node can choose.
 int s[MAXP];
 
-
 void Dijkstra(int st){
 	for (i = 1; i <= n; ++i){
-		l[i] = INF;
+		dis[i] = INF;
 	}
 
-	// dijk.first : Temporary shortest path from start node to the ith node. dijk.second : the index of the node, means i.
-	priority_queue<pair<long long, int> > dijk;
-	for (i = 0; i < s[1]; ++i){
+	// pq.first : Temporary shortest distance from start node to the ith node. pq.second : the index of the node, means i.
+	priority_queue<pair<long long, int> > pq;
+	for (i = 0; i < s[st]; ++i){
 		edge e = al[st][i];
-		dijk.push(make_pair(e.cost * (-1), e.dest));
-		l[e.dest] = e.cost;
+		pq.push(make_pair(-e.cost, e.dest));
+		if(e.cost < dis[e.dest]) dis[e.dest] = e.cost;
 	}
-	l[st] = 0;
+	dis[st] = 0;
 	ana[st] = true;
 
-	while (!dijk.empty()){
-		int anai = dijk.top().second;
-		dijk.pop();
+	while (!pq.empty()){
+		int anai = pq.top().second; pq.pop();
 		if (ana[anai]) continue;
 
-		int j;
-		for (j = 0; j < s[anai]; ++j){
+		ana[anai] = true; 
+		for (int j = 0; j < s[anai]; ++j){
 			int dest = al[anai][j].dest;
-			if (l[anai] + al[anai][j].cost < l[dest]){
-				l[dest] = l[anai] + al[anai][j].cost;
-				dijk.push(make_pair(l[dest] * (-1), dest));
+			if (ana[dest]) continue;
+			if (dis[anai] + al[anai][j].cost < dis[dest]){
+				dis[dest] = dis[anai] + al[anai][j].cost;
+				pq.push(make_pair(-dis[dest], dest));
 			}
 		}
-		ana[anai] = true;
 	}
 
 	for (i = 1; i <= n; ++i){
-		printf("%lld", l[i]);
+		printf("%lld", dis[i]);
 		if (i < n) putchar(' ');
 	}
 }
 
 int main(){
 	int st;
-	memset(ana, 0, sizeof(ana));
-	memset(s, 0, sizeof(s));
 
 	scanf("%d%d%d", &n, &m, &st);
 	getchar();
